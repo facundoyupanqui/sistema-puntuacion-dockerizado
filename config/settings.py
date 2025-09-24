@@ -27,10 +27,11 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-u_*0041=0v=+me
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 
-ALLOWED_HOSTS = [h for h in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,web').split(',') if h]
+# Include VPS IP by default; can be overridden via DJANGO_ALLOWED_HOSTS
+ALLOWED_HOSTS = [h for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '31.97.87.136,127.0.0.1,web').split(',') if h]
 
 # CSRF trusted origins (needed behind reverse proxy like nginx)
-CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', 'http://localhost,http://127.0.0.1').split(',') if o]
+CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', 'http://31.97.87.136,https://31.97.87.136,http://127.0.0.1,https://127.0.0.1').split(',') if o]
 
 
 # Application definition
@@ -93,16 +94,6 @@ DATABASES = {
     }
 }
 
-
-
-# Use SQLite in CI or when running tests to avoid MySQL dependency
-if os.environ.get('CI') == 'true' or 'test' in sys.argv:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
 
 
 # Password validation
