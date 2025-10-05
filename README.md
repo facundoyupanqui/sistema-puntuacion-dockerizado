@@ -174,5 +174,48 @@ El frontend consiste en páginas para login, dashboard, ingreso de puntos (solo 
 - Archivos estáticos del frontend deben estar habilitados para cacheado controlado.
 
 
-Email: facundo@senati.pe
-contra : 123456789
+Nota: no incluyas credenciales reales en el README ni en el repositorio público.
+
+---
+
+## 11) Despliegue en VPS (Docker)
+
+Requisitos en el VPS:
+- Docker y Docker Compose Plugin instalados
+- Puerto 80 abierto
+
+Pasos:
+1. Conéctate por SSH al VPS y clona el repo:
+   ```bash
+   ssh usuario@IP_VPS
+   git clone https://github.com/TU_ORG_O_USER/TU_REPO.git
+   cd TU_REPO
+   ```
+2. Crea el archivo `.env` con variables reales (no lo subas al repo):
+   ```bash
+   MYSQL_DATABASE=puntaje_db
+   MYSQL_USER=mi_usuario
+   MYSQL_PASSWORD=mi_password
+   MYSQL_ROOT_PASSWORD=mi_root_password
+   MYSQL_HOST=db
+   MYSQL_PORT=3306
+
+   DJANGO_SECRET_KEY=una_clave_segura_larga
+   DJANGO_DEBUG=false
+   DJANGO_ALLOWED_HOSTS=IP_VPS,web
+   DJANGO_CSRF_TRUSTED_ORIGINS=http://IP_VPS
+   ```
+3. Levanta los contenedores:
+   ```bash
+   sudo docker compose up -d --build
+   ```
+4. (Opcional) Ejecuta migraciones y crea superusuario:
+   ```bash
+   sudo docker compose run --rm web python manage.py migrate
+   sudo docker compose run --rm web python manage.py createsuperuser
+   ```
+5. Abre en el navegador: `http://IP_VPS`
+
+Notas:
+- El archivo `sistemadepuntuacion.sql` en la raíz se importa automáticamente en MySQL la primera vez que se crea el volumen `db_data`.
+- Si cambias IP por dominio y HTTPS, ajusta `DJANGO_ALLOWED_HOSTS` y `DJANGO_CSRF_TRUSTED_ORIGINS` a `https://tu-dominio.com` y reinicia el stack: `sudo docker compose down && sudo docker compose up -d`.
